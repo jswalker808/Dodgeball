@@ -1,6 +1,8 @@
 push = require 'push'
 Class = require 'class'
+utils = require 'utilities'
 require 'Player'
+require 'Ball'
 
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -16,6 +18,8 @@ PLAYER_SPEED = 200
 function love.load()
     love.graphics.setDefaultFilter('nearest', 'nearest')
 
+    math.randomseed(os.time())
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         resizable = true,
@@ -23,6 +27,8 @@ function love.load()
     })
 
     player = Player(VIRTUAL_WIDTH / 2 - 10, VIRTUAL_HEIGHT - 40, 20, 20)
+    ball = Ball(VIRTUAL_WIDTH / 2 - 10, 0, 5, 5)
+
 end
 
 --[[
@@ -39,6 +45,8 @@ function love.update(dt)
     end
 
     player:update(dt)
+    ball:update(dt)
+
 end
 
 --[[
@@ -48,6 +56,8 @@ end
 function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
+    elseif key == 'enter' or key == 'return' then
+        ball:reset()
     end
 end
 
@@ -60,19 +70,8 @@ function love.draw()
 
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
-    -- Render the body
-    love.graphics.rectangle('fill', player.x, player.y, player.width, player.height)
-    love.graphics.setColor(40/255, 45/255, 52/255, 255/255)
-
-    -- Render the eyes
-    love.graphics.rectangle('fill', player.x + 3, player.y + 5, 2, 2)
-    love.graphics.rectangle('fill', player.x + player.width - 5, player.y + 5, 2, 2)
-
-    -- Render the mouth
-    love.graphics.rectangle('fill', player.x + 3, player.y + 10, 1, 2)
-    love.graphics.rectangle('fill', player.x + 3, player.y + 12, player.width - 6, 1)
-    love.graphics.rectangle('fill', player.x + player.width - 4, player.y + 10, 1, 2)
+    utils.drawPlayer(player)
+    utils.drawBall(ball)
 
     push:apply('end')
 end
-
