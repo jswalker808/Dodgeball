@@ -1,14 +1,8 @@
 Ball = Class{}
 
-function Ball:init(x, y, height, width)
-    self.x = x
-    self.y = y
-
+function Ball:init(height, width)
     self.height = height
     self.width = width
-
-    self.dx = 0
-    self.dy = 0
 
     self:reset()
 end

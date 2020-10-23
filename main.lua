@@ -27,7 +27,9 @@ function love.load()
     })
 
     player = Player(VIRTUAL_WIDTH / 2 - 10, VIRTUAL_HEIGHT - 40, 20, 20)
-    ball = Ball(VIRTUAL_WIDTH / 2 - 10, 0, 5, 5)
+    balls = {Ball(5, 5)}
+
+    start_time = os.time()
 
 end
 
@@ -45,7 +47,15 @@ function love.update(dt)
     end
 
     player:update(dt)
-    ball:update(dt)
+
+    print(os.difftime(os.time(),start_time))
+    if os.difftime(os.time(),start_time) % 3 == 0 then
+        balls[#balls+1] = Ball(5, 5)
+    end
+
+    for _,ball in pairs(balls) do
+        ball:update(dt)
+    end
 
 end
 
@@ -71,7 +81,9 @@ function love.draw()
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
     utils.drawPlayer(player)
-    utils.drawBall(ball)
+    for _, ball in pairs(balls) do
+        utils.drawBall(ball)
+    end
 
     push:apply('end')
 end
