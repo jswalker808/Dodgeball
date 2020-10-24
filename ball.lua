@@ -3,7 +3,6 @@ Ball = Class{}
 function Ball:init(height, width)
     self.height = height
     self.width = width
-
     self:reset()
 end
 

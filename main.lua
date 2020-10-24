@@ -29,8 +29,7 @@ function love.load()
     player = Player(VIRTUAL_WIDTH / 2 - 10, VIRTUAL_HEIGHT - 40, 20, 20)
     balls = {Ball(5, 5)}
 
-    start_time = os.time()
-
+    dtotal = 0
 end
 
 --[[
@@ -47,14 +46,26 @@ function love.update(dt)
     end
 
     player:update(dt)
-
-    print(os.difftime(os.time(),start_time))
-    if os.difftime(os.time(),start_time) % 3 == 0 then
+ 
+    -- Generate new ball every second
+    dtotal = dtotal + dt
+    if dtotal >= 1 then
+        dtotal = dtotal - 1
         balls[#balls+1] = Ball(5, 5)
     end
 
+    local balls_to_remove = {}
     for _,ball in pairs(balls) do
-        ball:update(dt)
+        if ball.x <  0 or ball.x > VIRTUAL_WIDTH or ball.y < 0 or ball.y > VIRTUAL_HEIGHT then
+            print("Ball is out of bounds")
+            balls_to_remove[#balls_to_remove+1] = ball
+        else 
+            ball:update(dt)
+        end
+    end
+
+    for index = 1, #balls_to_remove do
+        table.remove(balls_to_remove, index)
     end
 
 end
@@ -81,6 +92,7 @@ function love.draw()
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
     utils.drawPlayer(player)
+
     for _, ball in pairs(balls) do
         utils.drawBall(ball)
     end
