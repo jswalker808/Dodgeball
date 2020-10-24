@@ -15,10 +15,24 @@ end
 
 local function drawBall(ball)
   love.graphics.setColor(255, 255, 255, 255)
-  love.graphics.rectangle('fill', ball.x, ball.y, ball.width, ball.height)
+  love.graphics.circle('fill', ball.x, ball.y, ball.radius)
+end
+
+local function drawScore(sub_font, score, virtual_height, virtual_width)
+  love.graphics.setFont(sub_font)
+  love.graphics.printf(score, 20, 20, virtual_width, 'left')
+end
+
+local function drawStartScreen(title_font, sub_font, virtual_height, virtual_width)
+  love.graphics.setFont(title_font)
+  love.graphics.printf('DODGEBALL!', 0, virtual_height / 2 - 10, virtual_width, 'center')
+  love.graphics.setFont(sub_font)
+  love.graphics.printf('Press Enter', 0, virtual_height / 2 + 30, virtual_width, 'center')
 end
 
 return {
   drawPlayer = drawPlayer,
-  drawBall = drawBall
+  drawBall = drawBall,
+  drawStartScreen = drawStartScreen,
+  drawScore = drawScore
 }

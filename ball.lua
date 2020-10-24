@@ -1,8 +1,7 @@
 Ball = Class{}
 
-function Ball:init(height, width)
-    self.height = height
-    self.width = width
+function Ball:init(radius)
+    self.radius = radius
     self:reset()
 end
 
@@ -16,9 +15,9 @@ end
 function Ball:update(dt)
 
     if self.dx < 0 then
-        self.x = math.max(0, self.x + self.dx * dt)
+        self.x = math.max(0 + self.radius, self.x + self.dx * dt)
     else
-        self.x = math.min(VIRTUAL_WIDTH - self.width, self.x + self.dx * dt)
+        self.x = math.min(VIRTUAL_WIDTH - self.radius, self.x + self.dx * dt)
     end
 
     self.y = self.y + self.dy * dt

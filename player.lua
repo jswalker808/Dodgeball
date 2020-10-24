@@ -19,4 +19,11 @@ function Player:update(dt)
     end
 end
 
+function Player:reset(x, y)
+    self.x = x
+    self.y = y
+    self.dx = 0
+    self.dy = 0
+end
+
 
