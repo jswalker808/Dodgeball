@@ -24,6 +24,11 @@ function love.load()
     sub_font = love.graphics.newFont('font.ttf', 8)
     score_font = love.graphics.newFont('font.ttf', 16)
 
+    sounds = {
+        ['bounce'] = love.audio.newSource('sounds/bounce.wav', 'static'),
+        ['game_over'] = love.audio.newSource('sounds/Explosion.wav', 'static')
+    }
+
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
         resizable = true,
@@ -36,8 +41,11 @@ function love.load()
     score = 0
 
     dtotal = 0
+    num_balls_generated = 1
 
     game_state = 'start'
+
+    start_time = os.time()
 end
 
 
@@ -59,13 +67,20 @@ function love.update(dt)
         end
 
         player:update(dt)
-    
+   
         -- Generate new ball every second
         dtotal = dtotal + dt
-        if dtotal >= 1 then
+        if dtotal >= 0.5 then
             dtotal = dtotal - 1
-            random_ball_radius = math.random(5, 20)
-            balls[#balls+1] = Ball(random_ball_radius)
+
+            if score ~= 0 and score % 5 == 0 then
+                num_balls_generated = num_balls_generated + 1 
+            end
+
+            for index=1, num_balls_generated do
+                random_ball_radius = math.random(5, 20)
+                balls[#balls+1] = Ball(random_ball_radius)
+            end
             -- print(#balls)
         end
 
@@ -74,21 +89,35 @@ function love.update(dt)
         local bounding_box_right = player.x + player.width + 20 
 
         for index=#balls, 1, -1 do
-            if balls[index].y - balls[index].radius > VIRTUAL_HEIGHT then
-                table.remove(balls, index)
-                score = score + 1
-            else    
-                balls[index]:update(dt)
-            end
-
             if balls[index].x >= bounding_box_left and balls[index].x <= bounding_box_right and balls[index].y >= bounding_box_top  then
                 if balls[index]:collides(player) then
+                    sounds['game_over']:play()
                     game_state = 'stopped'
                     -- print(game_state)
                     break
                 end
             end
+
+            if balls[index].x <= 0 then
+                balls[index].x = 1
+                balls[index].dx = -balls[index].dx
+                sounds['bounce']:play()
+            end
+
+            if balls[index].x >= VIRTUAL_WIDTH - balls[index].radius then
+                balls[index].x = VIRTUAL_WIDTH - balls[index].radius
+                balls[index].dx = -balls[index].dx
+                sounds['bounce']:play()
+            end
+            
+            if balls[index].y - balls[index].radius > VIRTUAL_HEIGHT then
+                table.remove(balls, index)
+            else    
+                balls[index]:update(dt)
+            end
         end
+
+        score = os.time() - start_time
 
     end
 
@@ -141,6 +170,8 @@ end
 
 function resetGame() 
     score = 0
+    start_time = os.time()
+    num_balls_generated = 1
     for index = 1, #balls do balls[index] = nil end
     player:reset(VIRTUAL_WIDTH / 2 - 10, VIRTUAL_HEIGHT - 40)
 end

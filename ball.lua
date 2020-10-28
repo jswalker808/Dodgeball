@@ -8,8 +8,8 @@ end
 function Ball:reset()
     self.x = math.random(50, VIRTUAL_WIDTH - 50)
     self.y = 1
-    self.dx = math.random(-100, 100)
-    self.dy = math.random(50, 200)
+    self.dx = math.random(-200, 400)
+    self.dy = math.random(200, 400)
 end
 
 function Ball:update(dt)
