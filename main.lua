@@ -60,8 +60,12 @@ function love.update(dt)
 
         if love.keyboard.isDown('a') then
             player.dx = -PLAYER_SPEED
+        elseif love.keyboard.isDown('left') then
+            player.dx = -PLAYER_SPEED
         elseif love.keyboard.isDown('d') then
             player.dx = PLAYER_SPEED
+        elseif love.keyboard.isDown('right') then
+            player.dx = -PLAYER_SPEED
         else
             player.dx = 0
         end
