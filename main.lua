@@ -37,7 +37,7 @@ function love.load()
 
     dtotal = 0
 
-    game_state = 'nil'
+    game_state = 'start'
 end
 
 
@@ -66,7 +66,12 @@ function love.update(dt)
             dtotal = dtotal - 1
             random_ball_radius = math.random(5, 20)
             balls[#balls+1] = Ball(random_ball_radius)
+            -- print(#balls)
         end
+
+        local bounding_box_left = player.x - 20
+        local bounding_box_top = player.y - 20
+        local bounding_box_right = player.x + player.width + 20 
 
         for index=#balls, 1, -1 do
             if balls[index].y - balls[index].radius > VIRTUAL_HEIGHT then
@@ -74,6 +79,14 @@ function love.update(dt)
                 score = score + 1
             else    
                 balls[index]:update(dt)
+            end
+
+            if balls[index].x >= bounding_box_left and balls[index].x <= bounding_box_right and balls[index].y >= bounding_box_top  then
+                if balls[index]:collides(player) then
+                    game_state = 'stopped'
+                    -- print(game_state)
+                    break
+                end
             end
         end
 
@@ -89,14 +102,11 @@ function love.keypressed(key)
     if key == 'escape' then
         love.event.quit()
     elseif key == 'enter' or key == 'return' then
-        if game_state == 'start' then
-            game_state = 'play'
-            start_time = os.time()
-        else
+        resetGame()
+        if game_state == 'play' then
             game_state = 'start'
-            score = 0
-            for index = 1, #balls do balls[index] = nil end
-            player:reset(VIRTUAL_WIDTH / 2 - 10, VIRTUAL_HEIGHT - 40)
+        else
+            game_state = 'play'
         end
     end
 end
@@ -106,7 +116,7 @@ end
     updated or otherwise.
 ]]
 function love.draw()
-    push:apply('start')
+    push:start()
 
     love.graphics.clear(40/255, 45/255, 52/255, 255/255)
 
@@ -118,9 +128,27 @@ function love.draw()
         for _, ball in pairs(balls) do
             utils.drawBall(ball)
         end
-    else
+    elseif game_state == 'start' then
         utils.drawStartScreen(title_font, sub_font, VIRTUAL_HEIGHT, VIRTUAL_WIDTH)
+    else
+        utils.drawStoppedScreen(title_font, sub_font, VIRTUAL_HEIGHT, VIRTUAL_WIDTH)
     end
 
-    push:apply('end')
+    displayFPS()
+
+    push:finish()
+end
+
+function resetGame() 
+    score = 0
+    for index = 1, #balls do balls[index] = nil end
+    player:reset(VIRTUAL_WIDTH / 2 - 10, VIRTUAL_HEIGHT - 40)
+end
+
+function displayFPS()
+    -- simple FPS display across all states
+    love.graphics.setFont(sub_font)
+    love.graphics.setColor(0, 255/255, 0, 255/255)
+    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 10, 10)
+    love.graphics.setColor(255, 255, 255, 255)
 end

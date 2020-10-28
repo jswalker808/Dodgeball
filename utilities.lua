@@ -30,9 +30,18 @@ local function drawStartScreen(title_font, sub_font, virtual_height, virtual_wid
   love.graphics.printf('Press Enter', 0, virtual_height / 2 + 30, virtual_width, 'center')
 end
 
+local function drawStoppedScreen(title_font, sub_font, virtual_height, virtual_width)
+  love.graphics.setFont(title_font)
+  love.graphics.printf('Game Over!', 0, virtual_height / 2 - 10, virtual_width, 'center')
+  love.graphics.setFont(sub_font)
+  love.graphics.printf('Final Score: ' .. score, 0, virtual_height / 2 + 20, virtual_width, 'center')
+  love.graphics.printf('Press enter to play again', 0, virtual_height / 2 + 30, virtual_width, 'center')
+end
+
 return {
   drawPlayer = drawPlayer,
   drawBall = drawBall,
   drawStartScreen = drawStartScreen,
-  drawScore = drawScore
+  drawScore = drawScore,
+  drawStoppedScreen = drawStoppedScreen
 }
